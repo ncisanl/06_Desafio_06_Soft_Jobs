@@ -5,7 +5,19 @@ import { softJobsModel } from "../models/softjobs.model.js";
 
 const getUsuariosController = async (req, res) => {
   const { email } = req.user;
-  return res.status(200).json({ message: "User logged successfully", email });
+  try {
+    const user = await softJobsModel.verifyEmail(email);
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const newUser = {
+      email: user.email,
+      rol: user.rol,
+      lenguage: user.lenguage,
+    };
+    return res.status(200).json([newUser]);
+  } catch (error) {}
 };
 const postUsuariosController = async (req, res) => {
   const { email, password, rol, lenguage } = req.body;
